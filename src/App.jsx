@@ -10,6 +10,7 @@ const ROLES = {
   admin:     { label: "ADMIN",  color: "#ffffff" },
   moderator: { label: "MOD",    color: "#22c55e" },
   member:    { label: "MEMBER", color: "#555555" },
+  OG: {label:"supporter and betatesters",color: "#22c55e"
 };
 const REACTIONS = ["+1","haha","fire","mind blown","love"];
 const REACTION_DISPLAY = { "+1":"+1","haha":"lol","fire":"fire","mind blown":"wtf","love":"love" };
@@ -36,9 +37,12 @@ const timeAgo = (iso) => {
 const fmt = n => n >= 1000 ? (n/1000).toFixed(1)+"k" : n;
 const canMod = role => role === "admin" || role === "moderator";
 const canPostIn = (cat, role) => {
-  if (!cat || cat.min_role === "member") return true;
-  if (cat.min_role === "moderator") return canMod(role);
-  if (cat.min_role === "admin") return role === "admin";
+  if (role === "admin") return true;
+  if (!cat?.min_role) return true;
+
+  if (cat.min_role === "member") return true;
+  if (cat.min_role === "moderator") return role === "moderator";
+
   return false;
 };
 
