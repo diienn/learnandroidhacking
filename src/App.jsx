@@ -1,4 +1,4 @@
-cat > /home/claude/lah-forum/src/App.jsx << 'ENDOFFILE'
+
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createClient } from "@supabase/supabase-js";
 
@@ -909,5 +909,4 @@ function Splash() {
     <div style={{width:24,height:24,border:"2px solid #1a1a1a",borderTop:"2px solid #22c55e",borderRadius:"50%"}} className="spin"/>
   </div>;
 }
-ENDOFFILE
-echo "Done — $(wc -l < /home/claude/lah-forum/src/App.jsx) lines"
+
