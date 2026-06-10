@@ -37,7 +37,7 @@ const POINTS = {
 
 // ── WORD FILTER ───────────────────────────────────────────
 const BANNED_WORDS = [
-  "nigger","nigga","faggot","retard","chink","spic","kike","tranny",
+  "nigger","nigga","faggot","retard","chink","spic","kike","tranny","ng","nga","porn","por","
   // add more as needed
 ];
 const containsBannedWord = text => {
@@ -61,7 +61,7 @@ const CATEGORIES = [
   { slug:"offtopic",      label:"Off-Topic",     viewRole:"member" },
 ];
 
-const ALL_TAGS = ["bnm","il2cpp","unity","dobby","openxr","quest","vr","vulkan","ndk","cmake","imgui","egl","frida","ghidra","metadata","arm64","hook","android","beginner","template","guide","crash","help","build"];
+const ALL_TAGS = ["bnm","il2cpp","unity","dobby","openxr","quest","vr","vulkan","ndk","cmake","imgui","UE","frida","ghidra","metadata","arm64","hook","android","beginner","template","guide","crash","help","build"];
 
 const timeAgo = iso => {
   const s = (Date.now() - new Date(iso)) / 1000;
@@ -83,6 +83,67 @@ async function awardPoints(userId, amount, reason) {
     await sb.from("profiles").update({ points: (p?.points || 0) + amount }).eq("id", userId);
   }
 }
+
+
+
+export default function App() {
+  const [session, setSession]         = useState(null);
+  const [profile, setProfile]         = useState(null);
+  const [view, setView]               = useState("home");
+  const [thread, setThread]           = useState(null);
+  const [activeCat, setActiveCat]     = useState("all");
+  const [activeTag, setActiveTag]     = useState(null);
+  const [search, setSearch]           = useState("");
+  const [booting, setBooting]         = useState(true);
+  const [pubProfileId, setPubProfile] = useState(null);
+  const [dailyToast, setDailyToast]   = useState(false);
+
+  // EXISTING useEffect (auth)
+  useEffect(() => {
+    sb.auth.getSession().then(({ data }) => {
+      ...
+    });
+    ...
+  }, []);
+
+  // ADD THIS RIGHT HERE ↓
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.startsWith("#/user/")) {
+      const username = hash.slice(7);
+      sb.from("profiles").select("id").eq("username", username).single()
+        .then(({ data }) => {
+          if (data) { setPubProfile(data.id); setView("pubprofile"); }
+        });
+    } else if (hash.startsWith("#/thread/")) {
+      const id = hash.slice(9);
+      sb.from("threads").select("*").eq("id", id).single()
+        .then(({ data }) => {
+          if (data) { setThread(data); setView("thread"); }
+        });
+    }
+  }, []);
+
+  const loadProfile = async uid => { ... };
+
+
+  const openThread = t => {
+    window.location.hash = `/thread/${t.id}`;
+    setThread(t); setView("thread");
+  };
+
+  const openProfile = id => {
+    sb.from("profiles").select("username").eq("id", id).single()
+      .then(({ data }) => {
+        if (data) window.location.hash = `/user/${data.username}`;
+      });
+    setPubProfile(id); setView("pubprofile");
+  };
+
+  const goHome = () => {
+    window.location.hash = "";
+    setView("home"); setActiveTag(null); setSearch("");
+  };
 
 async function checkDailyLogin(userId) {
   const today = new Date().toISOString().split("T")[0];
